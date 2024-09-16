@@ -1,8 +1,8 @@
 import { StyleSheet} from 'react-native';
 import SOS from './components/SOS'
 import Map from './components/Map';
-import ETA_Monitor from './components/ETA_Components/ETA_Monitor';
-import Contacts from './components/Contacts';
+// import ETA_Monitor from './components/ETA_Components/ETA_Monitor';
+import EmergencyContacts from './components/EmergencyContacts';
 import HomeScreen from './components/HomeScreen';
 import  { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -15,8 +15,8 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="SOS" component={SOS} />
         <Stack.Screen name="Map" component={Map} />
-        <Stack.Screen name="ETA_Monitor" component={ETA_Monitor} />
-        <Stack.Screen name="Contacts" component={Contacts} />
+        {/* <Stack.Screen name="ETA_Monitor" component={ETA_Monitor} /> */}
+        <Stack.Screen name="EmergencyContacts" component={EmergencyContacts} />
       </Stack.Navigator>
     </NavigationContainer>
   );
