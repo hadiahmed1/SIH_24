@@ -1,63 +1,118 @@
-import React, { useState } from 'react'
-import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native-web'
-import { LocationInput } from './LocationInput';
-import SOS_Sender from './SOS_Sender';
+import React, { useState } from 'react';
+import axios from 'axios';
 
-const ETA_Monitor = () => {
-  const [start, setStart] = useState('');
+const GOOGLE_MAPS_API_KEY ='AIzaSyDLkAGFrdle0zjzuYr9sY3z_LwImkscqyw'; // Replace with your API key
+
+const DistanceTimeCalculator = () => {
+  const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
-  const [eta, setEta] = useState(5);
-  const [isSafe, setIsSafe] = useState(true);
-  const sendSOS=()=>console.log("Sending SOS")
-  const monitorETA=()=>{
-    console.log("Setting timer for:",eta)
-    setTimeout(() => {
-      console.log("Time over, Are you okay")
-      setIsSafe(false)
-      setTimeout(() => {
-        if(isSafe){
-          sendSOS();
-        }
-      }, 5000);
-    }, parseInt(eta)*1000);
-  }
+  const [distance, setDistance] = useState('');
+  const [duration, setDuration] = useState('');
+
+  // Fetch distance and time using Distance Matrix API
+  const calculateDistanceAndTime = async () => {
+    if (!origin || !destination) {
+      alert('Please enter both origin and destination');
+      return;
+    }
+
+    const apiURL = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(
+      origin
+    )}&destinations=${encodeURIComponent(
+      destination
+    )}&key=${GOOGLE_MAPS_API_KEY}`;
+
+    try {
+      const response = await axios.get(apiURL);
+      const data = response.data;
+
+      if (data.rows[0].elements[0].status === 'OK') {
+        setDistance(data.rows[0].elements[0].distance.text);
+        setDuration(data.rows[0].elements[0].duration.text);
+      } else {
+        alert('Error fetching distance or time. Please check the locations.');
+      }
+    } catch (error) {
+      console.error('Error fetching data from Google Maps API', error);
+      alert('Error fetching data from Google Maps API');
+    }
+  };
+
   return (
-    <View>
-      {/* Input Start */}
-      <LocationInput val={start} setVal={setStart} ip={"Start"} 
-      onClick={()=>console.log(`Start=${start}`)}/>
-      <LocationInput val={destination} setVal={setDestination} ip={"Destination"} 
-      onClick={()=>console.log(`Destination=${destination}`)}/>
-      {/* ETA Monitor */}
-      <View style={styles.container}>
-        {/* Temporary Manual Input */}
-        <LocationInput val={eta} setVal={setEta} ip={"ETA"} onClick={monitorETA}/>
-        <Text style={styles.text}>Expected ETA={eta}</Text>
-      </View>
-      <View style={styles.container}>
-      </View>
-      {/* are you okay */}
-      <View style={styles.container}>
-        {!isSafe && <SOS_Sender setIsSafe={setIsSafe}/>}
-      </View>
-    </View>
-  )
-}
+    <div style={styles.container}>
+      <h1> Distance & Time Calculator</h1>
 
-const styles = StyleSheet.create({
+      <div style={styles.inputContainer}>
+        
+        <input
+          type="text"
+          value={origin}
+          onChange={(e) => setOrigin(e.target.value)}
+          placeholder="Enter origin address"
+          style={styles.input}
+        />
+      </div>
+
+      <div style={styles.inputContainer}>
+       
+        <input
+          type="text"
+          value={destination}
+          onChange={(e) => setDestination(e.target.value)}
+          placeholder="Enter destination address"
+          style={styles.input}
+        />
+      </div>
+
+      <button onClick={calculateDistanceAndTime} style={styles.button}>
+        Calculate Distance & Time
+      </button>
+
+      {distance && duration && (
+        <div style={styles.result}>
+          <h3>Results:</h3>
+          <p>Distance: {distance}</p>
+          <p>Duration: {duration}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Basic styles...............
+const styles = {
   container: {
-    flex: 1,
-    flexDirection: 'row',
-    width: '90%',
-    margin: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: '20px',
+    maxWidth: '500px',
+    margin: 'auto',
+    textAlign: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: '10px',
   },
-  text: {
-    textAlign: 'center', // center the text
-    fontSize: 18, // increase font size
-    fontWeight: 'bold' // make font bold
+  inputContainer: {
+    marginBottom: '10px',
   },
-});
+  input: {
+    padding: '10px',
+    width: '80%',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+  },
+  button: {
+    padding: '10px 20px',
+    backgroundColor: '#1e88e5',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginTop: '20px',
+  },
+  result: {
+    marginTop: '20px',
+    backgroundColor: '#fff',
+    padding: '10px',
+    borderRadius: '5px',
+  },
+};
 
-export default ETA_Monitor
+export default DistanceTimeCalculator;

@@ -12,8 +12,8 @@ const HomeScreen = ({navigation}) => {
       <Pressable style={[styles.optionButton,{backgroundColor:"yellow"}]} onPress={()=>{navigation.navigate("ETA_Monitor")}}>
         <Text style={styles.optionText}>ETA_Monitor</Text>
       </Pressable>
-      <Pressable style={[styles.optionButton,{backgroundColor:"green"}]} onPress={()=>{navigation.navigate("Contacts")}}>
-        <Text style={styles.optionText}>Contacts</Text>
+      <Pressable style={[styles.optionButton,{backgroundColor:"green"}]} onPress={()=>{navigation.navigate("EmergencyContacts")}}>
+        <Text style={styles.optionText}>EmergencyContacts</Text>
       </Pressable>
     </View>
   )
